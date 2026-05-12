@@ -162,6 +162,38 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 | `PORT` | int | 8000 | 服务端口 |
 | `LOG_LEVEL` | str | INFO | 日志级别 |
 
+## 部署说明
+
+### Railway 部署
+
+1. 登录 [Railway](https://railway.app/)
+2. 点击 "New Project" → "Deploy from GitHub repo"
+3. 选择你的 GitHub 仓库
+4. 设置环境变量：
+   - `DASHSCOPE_API_KEY`: 你的阿里云百炼 API Key
+5. Railway 会自动检测 `Procfile` 并启动服务
+
+### Docker 部署
+
+```bash
+# 构建镜像
+docker build -t voice-assistant .
+
+# 运行容器（使用环境变量配置）
+docker run -p 8000:8000 -e DASHSCOPE_API_KEY=your_api_key voice-assistant
+```
+
+### 环境变量配置
+
+所有配置均可通过环境变量设置（部署时推荐使用）：
+
+| 环境变量 | 类型 | 默认值 | 说明 |
+|----------|------|--------|------|
+| `DASHSCOPE_API_KEY` | str | - | 阿里云百炼 API Key（必填） |
+| `LLM_MODEL` | str | qwen-turbo | LLM 模型名称 |
+| `TTS_VOICE` | str | xiaoxiao | TTS 语音名称 |
+| `PORT` | int | 8000 | 服务端口（Railway 会自动设置） |
+
 ## 测试脚本
 
 项目包含以下测试脚本：

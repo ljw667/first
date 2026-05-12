@@ -20,9 +20,10 @@ from app.api.ws import voice_chat_endpoint
 from app.core.config import get_settings
 from app.middleware.error_handler import ErrorHandlerMiddleware
 
-# 加载 .env 文件（项目根目录/backend/.env）
+# 加载 .env 文件（项目根目录/backend/.env），如果存在的话
 _env_path = Path(__file__).resolve().parent.parent / ".env"
-load_dotenv(_env_path)
+if _env_path.exists():
+    load_dotenv(_env_path)
 
 
 # ---- 日志配置 ----
