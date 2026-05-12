@@ -1,0 +1,7 @@
+.trae/
+frontend/
+venv/
+__pycache__/
+*.pyc
+.git/
+README.md
