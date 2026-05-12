@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>多模态智能语音助手 - 测试页面</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 24px;
+        }
+        
+        .status-section {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 24px;
+        }
+        
+        .status-item {
+            text-align: center;
+            padding: 16px;
+            border-radius: 12px;
+            background: #f8f9fa;
+            min-width: 120px;
+        }
+        
+        .status-item .label {
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+        
+        .status-item .value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .status-item.connected .value {
+            color: #28a745;
+        }
+        
+        .status-item.disconnected .value {
+            color: #dc3545;
+        }
+        
+        .status-item.listening .value {
+            color: #ffc107;
+            animation: pulse 1.5s infinite;
+        }
+        
+        .status-item.thinking .value {
+            color: #17a2b8;
+        }
+        
+        .status-item.speaking .value {
+            color: #007bff;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 12px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: #e9ecef;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover:not(:disabled) {
+            background: #c82333;
+        }
+        
+        .btn-recording {
+            animation: pulse 1s infinite;
+        }
+        
+        .transcript-section {
+            margin-top: 24px;
+        }
+            margin-top: 24px;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #6c757d;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .transcript-box {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 16px;
+            min-height: 120px;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .transcript-box .user {
+            color: #007bff;
+            font-weight: 600;
+        }
+        
+        .transcript-box .assistant {
+            color: #28a745;
+            font-weight: 600;
+        }
+        
+        .message-item {
+            margin-bottom: 8px;
+        }
+        
+        .log-section {
+            margin-top: 24px;
+        }
+        
+        .log-box {
+            background: #1a1a2e;
+            color: #00ff88;
+            border-radius: 12px;
+            padding: 16px;
+            min-height: 150px;
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-box .error {
+            color: #ff4757;
+        }
+        
+        .log-box .warning {
+            color: #ffa502;
+        }
+        
+        .log-box .info {
+            color: #3742fa;
+        }
+        
+        .audio-controls {
+            margin-top: 16px;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .audio-controls button {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #e9ecef;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        
+        .audio-controls button:hover {
+            background: #dee2e6;
+        }
+        
+        .audio-controls button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .volume-slider {
+            margin-top: 12px;
+            width: 100%;
+        }
+        
+        .volume-slider label {
+            display: block;
+            font-size: 12px;
+            color: #6c757d;
+            margin-bottom: 8px;
+        }
+        
+        .volume-slider input {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #e9ecef;
+            outline: none;
+            appearance: none;
+        }
+        
+        .volume-slider input::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .modal h3 {
+            margin-bottom: 16px;
+            color: #333;
+        }
+        
+        .modal p {
+            margin-bottom: 24px;
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .modal-buttons .btn {
+            flex: 1;
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>多模态智能语音助手</h1>
+            <p>实时语音聊天测试</p>
+        </div>
+        
+        <div class="content">
+            <div class="status-section">
+                <div class="status-item" id="connectionStatus">
+                    <div class="label">连接状态</div>
+                    <div class="value disconnected" id="connectionValue">已断开</div>
+                </div>
+                <div class="status-item" id="sessionStatus">
+                    <div class="label">会话状态</div>
+                    <div class="value" id="sessionValue">空闲</div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary" id="connectBtn">连接服务器</button>
+            <button class="btn btn-secondary" id="startBtn" disabled>开始会话</button>
+            <button class="btn btn-danger btn-recording" id="recordBtn" disabled>
+                🎤 开始录音
+            </button>
+            <button class="btn btn-secondary" id="interruptBtn" disabled>打断</button>
+            
+            <div class="transcript-section">
+                <div class="section-title">对话记录</div>
+                <div class="transcript-box" id="transcriptBox">
+                    <div class="message-item">
+                        <span class="assistant">助手:</span> 您好！我是多模态智能语音助手，请问有什么可以帮助您的？
+                    </div>
+                </div>
+            </div>
+            
+            <div class="log-section">
+                <div class="section-title">系统日志</div>
+                <div class="log-box" id="logBox">
+                    [INFO] 页面已加载，准备连接服务器...
+                </div>
+            </div>
+            
+            <div class="audio-controls" id="audioControls" style="display: none;">
+                <button id="playAudioBtn">🔊 播放音频</button>
+                <button id="pauseAudioBtn" disabled>⏸️ 暂停</button>
+                <button id="stopAudioBtn" disabled>⏹️ 停止</button>
+            </div>
+            
+            <div class="volume-slider">
+                <label for="volumeSlider">音量: <span id="volumeValue">75</span>%</label>
+                <input type="range" id="volumeSlider" min="0" max="100" value="75">
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <h3>麦克风权限</h3>
+            <p>本应用需要访问您的麦克风以进行语音识别。请在浏览器弹出的权限请求中点击"允许"。</p>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" id="modalClose">知道了</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const connectBtn = document.getElementById('connectBtn');
+        const startBtn = document.getElementById('startBtn');
+        const recordBtn = document.getElementById('recordBtn');
+        const interruptBtn = document.getElementById('interruptBtn');
+        const connectionValue = document.getElementById('connectionValue');
+        const sessionValue = document.getElementById('sessionValue');
+        const transcriptBox = document.getElementById('transcriptBox');
+        const logBox = document.getElementById('logBox');
+        const audioControls = document.getElementById('audioControls');
+        const playAudioBtn = document.getElementById('playAudioBtn');
+        const pauseAudioBtn = document.getElementById('pauseAudioBtn');
+        const stopAudioBtn = document.getElementById('stopAudioBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeValue = document.getElementById('volumeValue');
+        const modalOverlay = document.getElementById('modalOverlay');
+        const modalClose = document.getElementById('modalClose');
+        
+        let websocket = null;
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let audioContext = null;
+        let audioBuffer = null;
+        let sourceNode = null;
+        let isRecording = false;
+        let isConnected = false;
+        let isSessionStarted = false;
+        let volume = 0.75;
+        
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            const SERVER_URL = isLocal 
+            ? `ws://${window.location.host}/ws/voice-chat` 
+            : `wss://${window.location.host}/ws/voice-chat`;
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const typeClass = type === 'error' ? 'error' : type === 'warning' ? 'warning' : 'info';
+            logBox.innerHTML += `[${timestamp}] <span class="${typeClass}">[${type.toUpperCase()}]</span> ${message}\n`;
+            logBox.scrollTop = logBox.scrollHeight;
+        }
+        
+        function updateConnectionStatus(connected) {
+            isConnected = connected;
+            if (connected) {
+                connectionValue.textContent = '已连接';
+                connectionValue.className = 'value connected';
+                connectBtn.textContent = '断开连接';
+                startBtn.disabled = false;
+                log('WebSocket 连接已建立', 'info');
+            } else {
+                connectionValue.textContent = '已断开';
+                connectionValue.className = 'value disconnected';
+                connectBtn.textContent = '连接服务器';
+                startBtn.disabled = true;
+                recordBtn.disabled = true;
+                interruptBtn.disabled = true;
+                isSessionStarted = false;
+                updateSessionStatus('idle');
+                log('WebSocket 连接已断开', 'warning');
+            }
+        }
+        
+        function updateSessionStatus(status) {
+            sessionValue.textContent = status === 'idle' ? '空闲' 
+                : status === 'listening' ? '听击中...' 
+                : status === 'thinking' ? '思考中...' 
+                : status === 'speaking' ? '说话中...' : status;
+            
+            sessionValue.className = `value ${status}`;
+        }
+        
+        function addTranscript(text, isUser = false) {
+            const messageItem = document.createElement('div');
+            messageItem.className = 'message-item';
+            messageItem.innerHTML = `<span class="${isUser ? 'user' : 'assistant'}">${isUser ? '用户:' : '助手:'}</span> ${text}`;
+            transcriptBox.appendChild(messageItem);
+            transcriptBox.scrollTop = transcriptBox.scrollHeight;
+        }
+        
+        async function connectWebSocket() {
+            try {
+                log(`正在连接到 ${SERVER_URL}...`, 'info');
+                websocket = new WebSocket(SERVER_URL);
+                
+                websocket.onopen = () => {
+                    updateConnectionStatus(true);
+                };
+                
+                websocket.onclose = (event) => {
+                    updateConnectionStatus(false);
+                    if (event.code !== 1000) {
+                        log(`连接异常关闭: ${event.reason}`, 'error');
+                    }
+                };
+                
+                websocket.onerror = (error) => {
+                    log(`WebSocket 错误: ${error}`, 'error');
+                };
+                
+                websocket.onmessage = async (event) => {
+                    if (event.data instanceof Blob) {
+                        log(`收到音频数据: ${event.data.size} 字节`, 'info');
+                        try {
+                            const arrayBuffer = await event.data.arrayBuffer();
+                            await playAudio(arrayBuffer);
+                        } catch (e) {
+                            log(`音频播放失败: ${e}`, 'error');
+                        }
+                    } else {
+                        try {
+                            const data = JSON.parse(event.data);
+                            handleServerMessage(data);
+                        } catch (e) {
+                            log(`解析消息失败: ${e}`, 'error');
+                        }
+                    }
+                };
+            } catch (e) {
+                log(`连接失败: ${e}`, 'error');
+            }
+        }
+        
+        function handleServerMessage(data) {
+            switch (data.type) {
+                case 'asr_partial':
+                    log(`ASR 部分结果: ${data.payload.text}`, 'info');
+                    break;
+                case 'asr_final':
+                    log(`ASR 最终结果: ${data.payload.text}`, 'info');
+                    addTranscript(data.payload.text, true);
+                    break;
+                case 'llm_chunk':
+                    log(`LLM 响应: ${data.payload.text}`, 'info');
+                    const lastMessage = transcriptBox.lastElementChild;
+                    if (lastMessage && lastMessage.querySelector('.assistant')) {
+                        const currentText = lastMessage.textContent.replace('助手: ', '');
+                        lastMessage.innerHTML = `<span class="assistant">助手:</span> ${currentText + data.payload.text}`;
+                    } else {
+                        addTranscript(data.payload.text, false);
+                    }
+                    transcriptBox.scrollTop = transcriptBox.scrollHeight;
+                    break;
+                case 'llm_done':
+                    log('LLM 响应完成', 'info');
+                    updateSessionStatus('speaking');
+                    break;
+                case 'tts_error':
+                    log(`TTS 错误: ${data.payload.detail}`, 'error');
+                    updateSessionStatus('idle');
+                    recordBtn.disabled = false;
+                    break;
+                case 'error':
+                    log(`服务器错误: ${data.detail}`, 'error');
+                    break;
+                default:
+                    log(`未知消息类型: ${data.type}`, 'warning');
+            }
+        }
+        
+        function disconnectWebSocket() {
+            if (websocket) {
+                websocket.close();
+                websocket = null;
+            }
+        }
+        
+        async function startSession() {
+            if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+                log('WebSocket 未连接', 'error');
+                return;
+            }
+            
+            try {
+                await navigator.mediaDevices.getUserMedia({ audio: true });
+                log('麦克风权限已获取', 'info');
+            } catch (e) {
+                log(`获取麦克风权限失败: ${e}`, 'error');
+                modalOverlay.classList.add('show');
+                return;
+            }
+            
+            const message = { type: 'session_start' };
+            websocket.send(JSON.stringify(message));
+            isSessionStarted = true;
+            startBtn.disabled = true;
+            recordBtn.disabled = false;
+            interruptBtn.disabled = false;
+            updateSessionStatus('idle');
+            log('会话已启动', 'info');
+        }
+        
+        function getSupportedMimeType() {
+            const mimetypes = [
+                'audio/webm;codecs=opus',
+                'audio/webm',
+                'audio/ogg;codecs=opus',
+                'audio/ogg'
+            ];
+            for (const mimeType of mimetypes) {
+                if (MediaRecorder.isTypeSupported(mimeType)) {
+                    return mimeType;
+                }
+            }
+            return null;
+        }
+        
+        async function startRecording() {
+            if (isRecording) return;
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: {
+                    sampleRate: 16000,
+                    channelCount: 1,
+                    echoCancellation: true,
+                    noiseSuppression: true
+                }});
+                
+                const mimeType = getSupportedMimeType();
+                const options = mimeType ? { mimeType: mimeType } : {};
+                mediaRecorder = new MediaRecorder(stream, options);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) {
+                        audioChunks.push(event.data);
+                    }
+                };
+                
+                mediaRecorder.onstop = async () => {
+                    const blobType = mimeType || 'audio/webm';
+                    const audioBlob = new Blob(audioChunks, { type: blobType });
+                    await sendAudio(audioBlob);
+                    stream.getTracks().forEach(track => track.stop());
+                };
+                
+                mediaRecorder.start(100);
+                isRecording = true;
+                recordBtn.textContent = '🛑 停止录音';
+                recordBtn.classList.add('btn-danger');
+                updateSessionStatus('listening');
+                log(`开始录音... 使用格式: ${mimeType || '默认'}`, 'info');
+            } catch (e) {
+                log(`录音失败: ${e}`, 'error');
+            }
+        }
+        
+        function stopRecording() {
+            if (!isRecording || !mediaRecorder) return;
+            
+            mediaRecorder.stop();
+            isRecording = false;
+            recordBtn.textContent = '🎤 开始录音';
+            recordBtn.classList.remove('btn-danger');
+            updateSessionStatus('thinking');
+            log('录音已停止，正在发送...', 'info');
+        }
+        
+        async function sendAudio(blob) {
+            if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+                log('WebSocket 未连接', 'error');
+                return;
+            }
+            
+            try {
+                const arrayBuffer = await blob.arrayBuffer();
+                const audioData = new Uint8Array(arrayBuffer);
+                
+                const message = { type: 'audio_start', format: blob.type };
+                websocket.send(JSON.stringify(message));
+                
+                const chunkSize = 1024;
+                for (let i = 0; i < audioData.length; i += chunkSize) {
+                    const chunk = audioData.slice(i, Math.min(i + chunkSize, audioData.length));
+                    websocket.send(chunk);
+                    await new Promise(resolve => setTimeout(resolve, 10));
+                }
+                
+                const endMessage = { type: 'audio_end' };
+                websocket.send(JSON.stringify(endMessage));
+                log('音频发送完成', 'info');
+            } catch (e) {
+                log(`发送音频失败: ${e}`, 'error');
+            }
+        }
+        
+        function sendInterrupt() {
+            if (!websocket || websocket.readyState !== WebSocket.OPEN) {
+                log('WebSocket 未连接', 'error');
+                return;
+            }
+            
+            const message = { type: 'interrupt' };
+            websocket.send(JSON.stringify(message));
+            isSessionStarted = false;
+            startBtn.disabled = false;
+            recordBtn.disabled = true;
+            interruptBtn.disabled = true;
+            updateSessionStatus('idle');
+            stopAudio();
+            log('已发送打断信号', 'info');
+        }
+        
+        async function playAudio(arrayBuffer) {
+            try {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                
+                audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                
+                if (sourceNode) {
+                    sourceNode.stop();
+                }
+                
+                sourceNode = audioContext.createBufferSource();
+                sourceNode.buffer = audioBuffer;
+                
+                const gainNode = audioContext.createGain();
+                gainNode.gain.value = volume;
+                
+                sourceNode.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                sourceNode.onended = () => {
+                    log('音频播放完成', 'info');
+                    updateSessionStatus('idle');
+                    recordBtn.disabled = false;
+                    playAudioBtn.disabled = false;
+                    pauseAudioBtn.disabled = true;
+                    stopAudioBtn.disabled = true;
+                };
+                
+                sourceNode.start();
+                audioControls.style.display = 'flex';
+                playAudioBtn.disabled = true;
+                pauseAudioBtn.disabled = false;
+                stopAudioBtn.disabled = false;
+                log('开始播放音频', 'info');
+            } catch (e) {
+                log(`播放音频失败: ${e}`, 'error');
+            }
+        }
+        
+        function pauseAudio() {
+            if (audioContext) {
+                audioContext.suspend();
+                pauseAudioBtn.textContent = '▶️ 继续';
+                log('音频已暂停', 'info');
+            }
+        }
+        
+        function resumeAudio() {
+            if (audioContext) {
+                audioContext.resume();
+                pauseAudioBtn.textContent = '⏸️ 暂停';
+                log('音频已继续', 'info');
+            }
+        }
+        
+        function stopAudio() {
+            if (sourceNode) {
+                try {
+                    sourceNode.stop();
+                } catch (e) {
+                    log(`停止音频时出错: ${e}`, 'warning');
+                }
+                sourceNode = null;
+            }
+            if (audioContext) {
+                audioContext.close();
+                audioContext = null;
+            }
+            audioControls.style.display = 'none';
+            playAudioBtn.disabled = false;
+            pauseAudioBtn.disabled = true;
+            stopAudioBtn.disabled = true;
+            pauseAudioBtn.textContent = '⏸️ 暂停';
+            log('音频已停止', 'info');
+        }
+        
+        connectBtn.addEventListener('click', () => {
+            if (isConnected) {
+                disconnectWebSocket();
+            } else {
+                connectWebSocket();
+            }
+        });
+        
+        startBtn.addEventListener('click', startSession);
+        
+        recordBtn.addEventListener('click', () => {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        });
+        
+        interruptBtn.addEventListener('click', sendInterrupt);
+        
+        playAudioBtn.addEventListener('click', () => {
+            if (audioBuffer) {
+                playAudio(audioBuffer);
+            }
+        });
+        
+        pauseAudioBtn.addEventListener('click', () => {
+            if (pauseAudioBtn.textContent.includes('暂停')) {
+                pauseAudio();
+            } else {
+                resumeAudio();
+            }
+        });
+        
+        stopAudioBtn.addEventListener('click', stopAudio);
+        
+        volumeSlider.addEventListener('input', (e) => {
+            volume = parseFloat(e.target.value) / 100;
+            volumeValue.textContent = e.target.value;
+            
+            if (audioContext && audioContext.state === 'running') {
+                const gainNode = audioContext.createGain();
+                gainNode.gain.value = volume;
+            }
+        });
+        
+        modalClose.addEventListener('click', () => {
+            modalOverlay.classList.remove('show');
+        });
+        
+        window.addEventListener('beforeunload', () => {
+            if (websocket) {
+                websocket.close();
+            }
+            if (mediaRecorder) {
+                mediaRecorder.stop();
+            }
+            stopAudio();
+        });
+    </script>
+</body>
+</html>
